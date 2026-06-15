@@ -1,3 +1,15 @@
+/*  
+ * UDP Parameter Server for ESP32
+ * https://github.com/jim-mckeown/ESP32-UDP-Parameter-Server-Class
+ *
+ * MIT License
+ * (c) 2026 Jim McKeown
+ *
+ * Version 2: 
+ * Force radio to stay awake to improve UDP reliability
+ *
+ */
+
 #ifndef PARAM_SERVER_H
 #define PARAM_SERVER_H
 

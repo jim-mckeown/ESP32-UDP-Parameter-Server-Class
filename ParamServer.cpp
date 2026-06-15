@@ -1,3 +1,15 @@
+/*  
+ * UDP Parameter Server for ESP32
+ * https://github.com/jim-mckeown/ESP32-UDP-Parameter-Server-Class
+ *
+ * MIT License
+ * (c) 2026 Jim McKeown
+ *
+ * Version 2: 
+ * Force radio to stay awake to improve UDP reliability
+ *
+ */
+
 #include "ParamServer.h"
 #include <WiFiManager.h>
 
@@ -20,6 +32,7 @@ bool ParamServer::begin(const char* apName) {
         Serial.println("[-] WiFi Connection timeout reached. Restarting Portal...");
         ESP.restart();
     }
+    WiFi.setSleep(false); // force the ESP32 radio to remain active at 100% performance
     Serial.print("[+] Connected! IP address: ");
     Serial.println(WiFi.localIP());
 
