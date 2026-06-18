@@ -8,6 +8,9 @@
  * Version 2: 
  * Force radio to stay awake to improve UDP reliability
  *
+ * Version 3:
+ * Add forceSaveParam() function
+ *
  */
 
 #include "ParamServer.h"
@@ -271,4 +274,14 @@ void ParamServer::loadParam(const Parameter& param) {
     if (param.type == PARAM_INT) *(int*)param.varPtr = content.toInt();
     if (param.type == PARAM_FLOAT) *(float*)param.varPtr = content.toFloat();
     if (param.type == PARAM_STRING) *(String*)param.varPtr = content;
+}
+
+void ParamServer::forceSaveParam(const String& command) {
+    for (const auto& param : _params) {
+        if (param.command.equalsIgnoreCase(command)) {
+            saveParam(param);
+            Serial.println("[+] ParamServer manually persisted parameter: " + command);
+            return;
+        }
+    }
 }

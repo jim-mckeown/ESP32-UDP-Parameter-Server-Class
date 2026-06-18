@@ -8,6 +8,9 @@
  * Version 2: 
  * Force radio to stay awake to improve UDP reliability
  *
+ * Version 3:
+ * Add forceSaveParam() function
+ *
  */
 
 #ifndef PARAM_SERVER_H
@@ -71,6 +74,7 @@ public:
     void registerParam(const String& command, int* varPtr);
     void registerParam(const String& command, float* varPtr);
     void registerParam(const String& command, String* varPtr);
+    void forceSaveParam(const String& command);
 
     // Clock Configurations
     void configureTime(long gmtOffset_sec, int daylightOffset_sec, const char* ntpServer = "pool.ntp.org");
