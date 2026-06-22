@@ -30,7 +30,13 @@ These commands are dynamically generated depending on what variables you registe
 * *Example Request:* `min_weight 2.5`
 * *Example Response:* `OK min_weight 2.5` *(Value is instantly committed to LittleFS Flash)*
 
+### Local Storage Overrides (Programmatic Commits)
 
+If a registered parameter is modified locally within the C++ sketch logic (rather than via a remote UDP network network command), it will reside only in temporary RAM. To explicitly save its current state to LittleFS so that it survives a device reboot, use:
+
+* **Force Manual Save:** `server.forceSaveParam(const String& command);`
+* *Example Usage:* `server.forceSaveParam("threshold");`
+* *Behavior:* Commits the current runtime value of the variable bound to `"threshold"` directly to flash storage (`/threshold.txt`).
 
 ### Target IP Management Commands
 
@@ -124,6 +130,16 @@ void loop() {
         server.sendAlert("EVENT_OCCURRED");
     }
 
+    // Example Scenario: Automated Self-Calibration or Local Emergency Fallback
+    if (unusual_environmental_noise_detected) {
+        threshold = 210.0; // Adjusted locally in RAM 
+        
+        // CRITICAL: Because this was changed via local code rather than a UDP packet, 
+        // it won't auto-save to LittleFS. We must manually force the commit:
+        server.forceSaveParam("threshold"); 
+        Serial.println("[System] Local adjustment permanently committed to Flash storage.");
+    }
+
     yield(); // Maintain ESP32 thread health
 }
 
@@ -133,8 +149,10 @@ void loop() {
 
 ## 3. Storage Architecture
 
-The class uses **LittleFS** to map variable updates directly to individual files in the root root flash path.
+The class uses **LittleFS** to map variable updates directly to individual files in the root flash path.
 
 * A parameter registered as `"cal"` generates a file named `/cal.txt`.
 * The target IP list is tracked and stored inside `/iplist.cfg`.
-* **Preserving Memory Lifespans:** To protect the flash memory against premature degradation, variables are only written to the flash storage during explicit network *Setter commands*. Routine code loop adjustments do not stress the storage components.
+
+**Preserving Memory Lifespans:** To protect the flash memory against premature degradation, variables are only written to flash storage automatically during explicit network *Setter commands*. Routine code loop adjustments do not stress storage components. **To intentionally save a locally altered variable state from within your code, you must invoke `server.forceSaveParam("command_name");`.**
+
